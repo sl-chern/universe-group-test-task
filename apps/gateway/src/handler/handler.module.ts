@@ -1,8 +1,10 @@
 import { Module } from "@nestjs/common";
-import { HandlerController } from "./handler.controller";
-import { HandlerService } from "./handler.service";
+import { HandlerController } from "src/handler/handler.controller";
+import { HandlerService } from "src/handler/handler.service";
+import { NatsModule } from "src/nats/nats.module";
 
 @Module({
+  imports: [NatsModule],
   controllers: [HandlerController],
   providers: [HandlerService],
 })

@@ -1,5 +1,5 @@
 {
-  "name": "gateway",
+  "name": "fb-collector",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -20,10 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nats-io/jetstream": "^3.0.2",
-    "@nats-io/transport-node": "^3.0.2",
     "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@testtask/utilities": "*",

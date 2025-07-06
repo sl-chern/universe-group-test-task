@@ -1,0 +1,11 @@
+{
+  "extends": "@testtask/tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./"
+  },
+  "watchOptions": {
+    "watchFile": "fixedPollingInterval"
+  }
+}
+

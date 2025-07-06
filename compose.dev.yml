@@ -7,10 +7,14 @@ services:
       args:
         PACKAGE_NAME: gateway
     volumes:
-      - ./apps/gateway/src/:/app/apps/gateway/src
+      - ./apps/gateway/:/app/apps/gateway
+    env_file: ./apps/gateway/.env
+    environment:
+      NATS_HOST: "nats"
 
   publisher:
-    image: andriiuni/events   
+    image: andriiuni/events
+    platform: linux/arm64
     environment:
       EVENT_ENDPOINT: http://gateway:3000/api/v1/events
 
@@ -20,4 +24,4 @@ services:
       - "8222:8222"
       - "4222:4222"
     command:
-      - "--js"
+      - "-js"
