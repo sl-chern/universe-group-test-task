@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String   @id
+  timestamp   DateTime
+  source      EventSource
+  funnelStage FunnelStage
+  eventType   String
+
+  facebookUser             FacebookUser?
+  tiktokUser               TiktokUser?
+  facebookTopEngagement    FacebookEngagementTop?
+  facebookBottomEngagement FacebookEngagementBottom?
+  tiktokTopEngagement      TiktokEngagementTop?
+  tiktokBottomEngagement   TiktokEngagementBottom?
+}
+
+model FacebookUser {
+  eventId String @id
+  name    String
+  age     Int
+  gender  Gender
+  country String
+  city    String
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model TiktokUser {
+  eventId  String @id
+  username String
+  followers Int
+
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model FacebookEngagementTop {
+  eventId    String   @id
+  actionTime DateTime
+  referrer   Referrer
+  videoId    String?
+
+  event      Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model FacebookEngagementBottom {
+  eventId        String   @id
+  adId           String
+  campaignId     String
+  clickPosition  ClickPosition
+  device         Device
+  browser        Browser
+  purchaseAmount String?
+  actionTime     DateTime
+
+  event          Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model TiktokEngagementTop {
+  eventId           String   @id
+  watchTime         Int
+  percentageWatched Int
+  device            TiktokDevice
+  country           String
+  videoId           String
+
+  event             Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model TiktokEngagementBottom {
+  eventId        String   @id
+  actionTime     DateTime
+  profileId      String?
+  purchasedItem  String?
+  purchaseAmount String?
+
+  event          Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+enum Gender {
+  male
+  female
+  non_binary
+}
+
+enum FunnelStage {
+  top
+  bottom
+}
+
+enum EventSource {
+  facebook
+  tiktok
+}
+
+enum Referrer {
+  newsfeed
+  marketplace
+  groups
+}
+
+enum ClickPosition {
+  top_left
+  bottom_right
+  center
+}
+
+enum Device {
+  mobile
+  desktop
+}
+
+enum Browser {
+  Chrome
+  Firefox
+  Safari
+}
+
+enum TiktokDevice {
+  Android
+  iOS
+  Desktop
+}
