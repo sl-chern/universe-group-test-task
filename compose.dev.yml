@@ -30,6 +30,26 @@ services:
       - postgres
     command: "sh start.dev.sh"
 
+  prometheus:
+    image: prom/prometheus
+    network_mode: host
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana:latest
+    network_mode: host
+    privileged: true
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - DS_PROMETHEUS=prometheus
+    volumes:
+      - "./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml"
+      - "./dashboard.json:/var/lib/grafana/dashboards/dashboard.json"
+      - "./default.yaml:/etc/grafana/provisioning/dashboards/default.yaml"
+    depends_on:
+      - prometheus
+
   ttk-collector:
     build:
       context: .
@@ -46,11 +66,26 @@ services:
       - postgres
     command: "sh start.dev.sh"
 
+  reporter:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        PACKAGE_NAME: reporter
+    volumes:
+      - ./apps/reporter/:/app/apps/reporter
+    env_file: ./apps/reporter/.env
+    ports:
+      - 3002:3002
+    depends_on:
+      - postgres
+    command: "sh start.dev.sh"
+
   publisher:
     image: andriiuni/events
     platform: linux/arm64
     environment:
-      EVENT_ENDPOINT: http://gateway:3000/api/v1/events
+      EVENT_ENDPOINT: http://gateway:3003/api/v1/events
     depends_on:
       - gateway
 
@@ -80,6 +115,5 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
 # volumes:
 #   postgres_data:

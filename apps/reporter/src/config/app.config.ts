@@ -8,7 +8,6 @@ export default registerAs<AppConfig>("app", () => {
   return {
     nodeEnv: process.env.NODE_ENV || "development",
     port: parseInt(process.env.PORT, 10) || 3000,
-    natsUrl: process.env.NATS_URL || "http://localhost:4222",
     bodyLimit: process.env.BODY_LIMIT || "10mb",
     globalPrefix: process.env.GLOBAL_PREFIX || "api",
   };
