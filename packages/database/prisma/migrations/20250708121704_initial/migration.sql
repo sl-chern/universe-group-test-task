@@ -73,7 +73,6 @@ CREATE TABLE "FacebookEngagementBottom" (
     "device" "Device" NOT NULL,
     "browser" "Browser" NOT NULL,
     "purchaseAmount" TEXT,
-    "actionTime" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "FacebookEngagementBottom_pkey" PRIMARY KEY ("eventId")
 );

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Event, eventType, subjectPrefix } from "@testtask/utilities";
 import { NatsService } from "src/nats/nats.service";
+import { eventSchema } from "./validation-schemas/events.schema";
 
 @Injectable()
 export class HandlerService {
@@ -18,17 +19,26 @@ export class HandlerService {
   }
 
   async handleEvents(events: Event[]) {
-    const facebookEvents = events.filter(
+    const validEvents: Event[] = [];
+    let invalidCount = 0;
+
+    for (const event of events) {
+      const result = eventSchema.safeParse(event);
+      if (result.success) {
+        validEvents.push(event);
+      } else {
+        invalidCount++;
+      }
+    }
+
+    console.log(invalidCount);
+
+    const facebookEvents = validEvents.filter(
       (event) => event.source === eventType.facebook,
     );
-    const tiktokEvents = events.filter(
+    const tiktokEvents = validEvents.filter(
       (event) => event.source === eventType.tiktok,
     );
-
-    console.log(JSON.stringify(facebookEvents[0]));
-    console.log(JSON.stringify(facebookEvents[1]));
-    console.log(JSON.stringify(tiktokEvents[0]));
-    console.log(JSON.stringify(tiktokEvents[1]));
 
     await Promise.allSettled([
       this.bulkEventPublish(

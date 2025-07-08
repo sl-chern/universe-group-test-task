@@ -5,6 +5,7 @@
       "dependsOn": ["^build", "^db:generate"]
     },
     "start:dev": {
+      "dependsOn": ["^db:deploy", "^db:generate"],
       "persistent": true,
       "cache": false
     },

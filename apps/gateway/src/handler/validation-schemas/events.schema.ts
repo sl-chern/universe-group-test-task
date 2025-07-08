@@ -139,5 +139,3 @@ const tiktokEventSchema = z.object({
 });
 
 export const eventSchema = z.union([facebookEventSchema, tiktokEventSchema]);
-
-export const eventArraySchema = z.array(eventSchema);

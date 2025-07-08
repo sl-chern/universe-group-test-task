@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { NatsService } from "src/nats/nats.service";
 import { ConfigService } from "@nestjs/config";
-import { FacebookModule } from "src/facebook/facebook.module";
+import { TiktokModule } from "src/tiktok/tiktok.module";
 
 @Module({
-  imports: [FacebookModule],
+  imports: [TiktokModule],
   providers: [NatsService, ConfigService],
   exports: [NatsService],
 })

@@ -58,8 +58,7 @@ model FacebookEngagementBottom {
   clickPosition  ClickPosition
   device         Device
   browser        Browser
-  purchaseAmount String?
-  actionTime     DateTime
+  purchaseAmount Decimal?
 
   event          Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
@@ -80,7 +79,7 @@ model TiktokEngagementBottom {
   actionTime     DateTime
   profileId      String?
   purchasedItem  String?
-  purchaseAmount String?
+  purchaseAmount Decimal?
 
   event          Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }

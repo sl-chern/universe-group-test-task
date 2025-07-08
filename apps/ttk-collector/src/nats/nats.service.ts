@@ -10,7 +10,7 @@ import { connect } from "@nats-io/transport-node";
 import { NatsConnection } from "@nats-io/nats-core";
 import { ConfigService } from "@nestjs/config";
 import { eventType, streamName, subjectPrefix } from "@testtask/utilities";
-import { FacebookService } from "src/facebook/facebook.service";
+import { TiktokService } from "src/tiktok/tiktok.service";
 
 @Injectable()
 export class NatsService implements OnModuleInit, OnModuleDestroy {
@@ -20,7 +20,7 @@ export class NatsService implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly facebookService: FacebookService,
+    private readonly tiktokService: TiktokService,
   ) {}
 
   async onModuleInit() {
@@ -33,15 +33,15 @@ export class NatsService implements OnModuleInit, OnModuleDestroy {
     await this.ensureStreamExists(streamName, [`${subjectPrefix}.*`]);
 
     await this.jsm.consumers.add(streamName, {
-      name: "events_facebook_consumer",
+      name: "events_tiktok_consumer",
       ack_policy: AckPolicy.Explicit,
-      filter_subjects: [`${subjectPrefix}.${eventType.facebook}`],
-      durable_name: "events_facebook_consumer",
+      filter_subjects: [`${subjectPrefix}.${eventType.tiktok}`],
+      durable_name: "events_tiktok_consumer",
     });
 
     const consumer = await this.js.consumers.get(
       streamName,
-      "events_facebook_consumer",
+      "events_tiktok_consumer",
     );
 
     const messages = (await consumer.consume({
@@ -49,7 +49,7 @@ export class NatsService implements OnModuleInit, OnModuleDestroy {
     })) as AsyncIterable<JsMsg>;
     try {
       for await (const m of messages) {
-        await this.facebookService.insertEvents(m.json());
+        await this.tiktokService.insertEvents(m.json());
         m.ack();
       }
     } catch (err) {
