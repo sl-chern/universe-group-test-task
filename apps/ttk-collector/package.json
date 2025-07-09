@@ -22,10 +22,12 @@
   "dependencies": {
     "@nats-io/jetstream": "^3.0.2",
     "@nats-io/transport-node": "^3.0.2",
+    "@nestjs/axios": "^4.0.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/terminus": "^11.0.0",
     "@testtask/database": "*",
     "@testtask/utilities": "*",
     "prom-client": "^15.1.3",

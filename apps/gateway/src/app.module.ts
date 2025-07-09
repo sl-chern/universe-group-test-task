@@ -4,6 +4,7 @@ import { NatsModule } from "src/nats/nats.module";
 import { ConfigModule } from "@nestjs/config";
 import appConfig from "src/config/app.config";
 import { PrometheusModule } from "src/prometheus/prometheus.module";
+import { HealthModule } from "src/health/health.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PrometheusModule } from "src/prometheus/prometheus.module";
     HandlerModule,
     NatsModule,
     PrometheusModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [],

@@ -8,13 +8,20 @@ services:
     volumes:
       - ./apps/gateway/:/app/apps/gateway
     env_file: ./apps/gateway/.env
+    healthcheck:
+      test: wget http://0.0.0.0:${GATEWAY_PORT}/api/v1/health -q -S -O -
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       NATS_HOST: "nats"
     ports:
       - ${GATEWAY_PORT}:${GATEWAY_PORT}
     depends_on:
-      - nats
-      - postgres
+      nats:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   fb-collector:
     build:
@@ -25,13 +32,20 @@ services:
     volumes:
       - ./apps/fb-collector/:/app/apps/fb-collector
     env_file: ./apps/fb-collector/.env
+    healthcheck:
+      test: wget http://0.0.0.0:${FB_COLLECTOR_PORT}/api/v1/health -q -S -O -
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - ${FB_COLLECTOR_PORT}:${FB_COLLECTOR_PORT}
     environment:
       NATS_HOST: "nats"
     depends_on:
-      - nats
-      - postgres
+      nats:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     command: "sh start.sh"
 
   prometheus:
@@ -64,13 +78,20 @@ services:
     volumes:
       - ./apps/ttk-collector/:/app/apps/ttk-collector
     env_file: ./apps/ttk-collector/.env
+    healthcheck:
+      test: wget http://0.0.0.0:${TTK_COLLECTOR_PORT}/api/v1/health -q -S -O -
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - ${TTK_COLLECTOR_PORT}:${TTK_COLLECTOR_PORT}
     environment:
       NATS_HOST: "nats"
     depends_on:
-      - nats
-      - postgres
+      nats:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     command: "sh start.sh"
 
   reporter:
@@ -82,10 +103,16 @@ services:
     volumes:
       - ./apps/reporter/:/app/apps/reporter
     env_file: ./apps/reporter/.env
+    healthcheck:
+      test: wget http://0.0.0.0:${REPORTER_PORT}/api/v1/health -q -S -O -
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - ${REPORTER_PORT}:${REPORTER_PORT}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     command: "sh start.sh"
 
   publisher:
@@ -97,11 +124,19 @@ services:
       - gateway
 
   nats:
-    image: nats:latest
+    image: nats:2.11.6-alpine
     volumes:
       - nats_data:/data
+    healthcheck:
+      test: wget http://localhost:8222/healthz -q -S -O -
+      interval: 30s
+      timeout: 20s
+      retries: 5
+    ports:
+      - 8222:8222
     command:
       - "-js"
+      - "--http_port=8222"
 
   postgres:
     image: postgres:latest
