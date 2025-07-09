@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "docker compose -f ./compose.dev.yml up -d",
-    "stop": "docker compose -f ./compose.dev.yml down"
+    "start": "docker compose -f ./compose.prod.yml --env-file ./prod.env up -d",
+    "stop": "docker compose -f ./compose.dev.yml down",
+    "stop:prod": "docker compose -f ./compose.prod.yml down"
   },
   "devDependencies": {
     "turbo": "^2.5.4"

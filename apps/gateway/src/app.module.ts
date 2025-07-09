@@ -10,7 +10,7 @@ import { PrometheusModule } from "src/prometheus/prometheus.module";
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig],
-      envFilePath: [".env"],
+      envFilePath: [`${process.env.NODE_ENV ? "prod" : ""}.env`],
     }),
     HandlerModule,
     NatsModule,

@@ -2,14 +2,14 @@ services:
   gateway:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       args:
         PACKAGE_NAME: gateway
     volumes:
       - ./apps/gateway/:/app/apps/gateway
-    env_file: ./apps/gateway/.env
     environment:
       NATS_HOST: "nats"
+      NODE_ENV: "production"
     ports:
       - ${GATEWAY_PORT}:${GATEWAY_PORT}
     depends_on:
@@ -19,16 +19,16 @@ services:
   fb-collector:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       args:
         PACKAGE_NAME: fb-collector
     volumes:
       - ./apps/fb-collector/:/app/apps/fb-collector
-    env_file: ./apps/fb-collector/.env
     ports:
       - ${FB_COLLECTOR_PORT}:${FB_COLLECTOR_PORT}
     environment:
       NATS_HOST: "nats"
+      NODE_ENV: "production"
     depends_on:
       - nats
       - postgres
@@ -58,16 +58,16 @@ services:
   ttk-collector:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       args:
         PACKAGE_NAME: ttk-collector
     volumes:
       - ./apps/ttk-collector/:/app/apps/ttk-collector
-    env_file: ./apps/ttk-collector/.env
     ports:
       - ${TTK_COLLECTOR_PORT}:${TTK_COLLECTOR_PORT}
     environment:
       NATS_HOST: "nats"
+      NODE_ENV: "production"
     depends_on:
       - nats
       - postgres
@@ -76,12 +76,13 @@ services:
   reporter:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
       args:
         PACKAGE_NAME: reporter
+    environment:
+      NODE_ENV: "production"
     volumes:
       - ./apps/reporter/:/app/apps/reporter
-    env_file: ./apps/reporter/.env
     ports:
       - ${REPORTER_PORT}:${REPORTER_PORT}
     depends_on:
