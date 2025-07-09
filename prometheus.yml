@@ -2,7 +2,17 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: "nestjs-app"
+  - job_name: "reporter"
     metrics_path: /api/v1/metrics
     static_configs:
-      - targets: ["localhost:3002"]
+      - targets: ["localhost:3004"]
+
+  - job_name: "gateway"
+    metrics_path: /api/v1/metrics
+    static_configs:
+      - targets: ["localhost:3003"]
+
+  - job_name: "collectors"
+    metrics_path: /api/v1/metrics
+    static_configs:
+      - targets: ["localhost:3001", "localhost:3002"]

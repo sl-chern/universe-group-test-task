@@ -68,10 +68,10 @@ export class FacebookService {
         });
       }
     }
+    await this.prisma.event.createMany({
+      data: dbEvents,
+    });
     await Promise.allSettled([
-      await this.prisma.event.createMany({
-        data: dbEvents,
-      }),
       await this.prisma.facebookUser.createMany({
         data: facebookUsers,
       }),

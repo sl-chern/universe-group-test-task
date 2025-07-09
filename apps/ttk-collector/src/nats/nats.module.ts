@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { NatsService } from "src/nats/nats.service";
 import { ConfigService } from "@nestjs/config";
 import { TiktokModule } from "src/tiktok/tiktok.module";
+import { PrometheusModule } from "src/prometheus/prometheus.module";
 
 @Module({
-  imports: [TiktokModule],
+  imports: [TiktokModule, PrometheusModule],
   providers: [NatsService, ConfigService],
   exports: [NatsService],
 })

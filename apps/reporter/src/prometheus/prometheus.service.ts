@@ -1,14 +1,23 @@
 import { Injectable } from "@nestjs/common";
-import * as client from "prom-client";
+import { Histogram, Registry } from "prom-client";
 
 @Injectable()
 export class PrometheusService {
-  private readonly register: client.Registry;
+  private readonly register: Registry;
+  private reportLatency: Histogram<string>;
 
   constructor() {
-    this.register = new client.Registry();
-    this.register.setDefaultLabels({ app: "nestjs-prometheus" });
-    client.collectDefaultMetrics({ register: this.register });
+    this.register = new Registry();
+    this.reportLatency = new Histogram({
+      name: "reporter_report_latency_seconds",
+      help: "Latency of reporter endpoints",
+      labelNames: ["report_type"],
+      registers: [this.register],
+    });
+  }
+
+  startReportTimer(reportType: string): () => void {
+    return this.reportLatency.startTimer({ report_type: reportType });
   }
 
   getMetrics(): Promise<string> {

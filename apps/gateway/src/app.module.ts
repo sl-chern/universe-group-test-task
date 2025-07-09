@@ -3,6 +3,7 @@ import { HandlerModule } from "src/handler/handler.module";
 import { NatsModule } from "src/nats/nats.module";
 import { ConfigModule } from "@nestjs/config";
 import appConfig from "src/config/app.config";
+import { PrometheusModule } from "src/prometheus/prometheus.module";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import appConfig from "src/config/app.config";
     }),
     HandlerModule,
     NatsModule,
+    PrometheusModule,
   ],
   controllers: [],
   providers: [],

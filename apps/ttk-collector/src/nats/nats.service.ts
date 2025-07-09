@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import {
   AckPolicy,
+  Consumer,
   JetStreamClient,
   JetStreamManager,
   jetstreamManager,
@@ -9,8 +10,14 @@ import {
 import { connect } from "@nats-io/transport-node";
 import { NatsConnection } from "@nats-io/nats-core";
 import { ConfigService } from "@nestjs/config";
-import { eventType, streamName, subjectPrefix } from "@testtask/utilities";
+import {
+  eventType,
+  streamName,
+  subjectPrefix,
+  TiktokEvent,
+} from "@testtask/utilities";
 import { TiktokService } from "src/tiktok/tiktok.service";
+import { PrometheusService } from "src/prometheus/prometheus.service";
 
 @Injectable()
 export class NatsService implements OnModuleInit, OnModuleDestroy {
@@ -21,6 +28,7 @@ export class NatsService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly configService: ConfigService,
     private readonly tiktokService: TiktokService,
+    private readonly prometheusService: PrometheusService,
   ) {}
 
   async onModuleInit() {
@@ -44,17 +52,26 @@ export class NatsService implements OnModuleInit, OnModuleDestroy {
       "events_tiktok_consumer",
     );
 
-    const messages = (await consumer.consume({
-      max_messages: 1,
-    })) as AsyncIterable<JsMsg>;
-    try {
-      for await (const m of messages) {
-        await this.tiktokService.insertEvents(m.json());
-        m.ack();
+    (async (consumer: Consumer) => {
+      const messages = (await consumer.consume({
+        max_messages: 1,
+      })) as AsyncIterable<JsMsg>;
+
+      let messagesAmount: number = 0;
+
+      try {
+        for await (const m of messages) {
+          const events: TiktokEvent[] = m.json();
+          messagesAmount = events.length;
+          this.prometheusService.incProcessed(messagesAmount);
+          await this.tiktokService.insertEvents(m.json());
+          this.prometheusService.incAccepted(messagesAmount);
+          m.ack();
+        }
+      } catch {
+        this.prometheusService.incFailed(messagesAmount);
       }
-    } catch (err) {
-      console.log(`consume failed: ${err}`);
-    }
+    })(consumer);
   }
 
   async onModuleDestroy() {

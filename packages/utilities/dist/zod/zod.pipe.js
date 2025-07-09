@@ -18,8 +18,7 @@ let ZodPipe = class ZodPipe {
         this.schema = schema;
     }
     transform(value) {
-        this.schema.parse(value);
-        return value;
+        return this.schema.parse(value);
     }
 };
 exports.ZodPipe = ZodPipe;

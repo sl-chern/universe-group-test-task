@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { Event, eventType, subjectPrefix } from "@testtask/utilities";
 import { NatsService } from "src/nats/nats.service";
-import { eventSchema } from "./validation-schemas/events.schema";
+import { eventSchema } from "src/handler/validation-schemas/events.schema";
+import { PrometheusService } from "src/prometheus/prometheus.service";
 
 @Injectable()
 export class HandlerService {
-  constructor(private readonly natsService: NatsService) {}
+  constructor(
+    private readonly natsService: NatsService,
+    private readonly prometheusService: PrometheusService,
+  ) {}
 
   async bulkEventPublish(
     events: Event[],
@@ -31,7 +35,9 @@ export class HandlerService {
       }
     }
 
-    console.log(invalidCount);
+    this.prometheusService.incFailed(invalidCount);
+    this.prometheusService.incAccepted(events.length - invalidCount);
+    this.prometheusService.incProcessed(events.length);
 
     const facebookEvents = validEvents.filter(
       (event) => event.source === eventType.facebook,

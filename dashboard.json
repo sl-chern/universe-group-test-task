@@ -8,146 +8,147 @@
   "version": 1,
   "panels": [
     {
-      "type": "graph",
-      "title": "Total HTTP Requests",
+      "type": "stat",
+      "title": "Gateway Accepted Events",
+      "id": 1,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
-          "expr": "http_requests_total",
-          "format": "time_series",
-          "interval": "",
-          "legendFormat": "{{method}} {{handler}}",
+          "expr": "gateway_accepted_events_total",
           "refId": "A"
         }
       ],
-      "datasource": null,
-      "xaxis": {
-        "mode": "time"
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "Gateway Processed Events",
+      "id": 2,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
       },
-      "yaxes": [
+      "targets": [
         {
-          "format": "short",
-          "label": "Requests"
+          "expr": "gateway_processed_events_total",
+          "refId": "B"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "Gateway Failed Events",
+      "id": 3,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "gateway_failed_events_total",
+          "refId": "C"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Report Latency by Category",
+      "id": 4,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "1000 * (sum(rate(reporter_report_latency_seconds_sum[1m])) by (report_type) / sum(rate(reporter_report_latency_seconds_count[1m])) by (report_type))",
+          "legendFormat": "{{report_type}}",
+          "refId": "A"
         }
       ],
       "gridPos": {
-        "h": 9,
-        "w": 12,
+        "h": 8,
+        "w": 24,
         "x": 0,
-        "y": 0
+        "y": 4
       },
-      "id": 1
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 2,
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
     },
     {
-      "type": "graph",
-      "title": "Request Duration",
+      "type": "timeseries",
+      "title": "Collectors Accepted, Processed, Failed Events",
+      "id": 5,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
-          "expr": "http_request_duration_seconds_sum / http_request_duration_seconds_count",
-          "format": "time_series",
-          "interval": "",
-          "legendFormat": "Average Request Duration",
+          "expr": "sum(rate(collector_accepted_events_total[1m]))",
+          "legendFormat": "accepted",
           "refId": "A"
-        }
-      ],
-      "datasource": null,
-      "xaxis": {
-        "mode": "time"
-      },
-      "yaxes": [
+        },
         {
-          "format": "s",
-          "label": "Seconds"
+          "expr": "sum(rate(collector_processed_events_total[1m]))",
+          "legendFormat": "processed",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(collector_failed_events_total[1m]))",
+          "legendFormat": "failed",
+          "refId": "C"
         }
       ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "decimals": 2
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "stacking": {
+          "mode": "none"
+        }
+      },
       "gridPos": {
         "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 2
-    },
-    {
-      "type": "singlestat",
-      "title": "Up Time",
-      "targets": [
-        {
-          "expr": "time() - process_start_time_seconds",
-          "format": "time_series",
-          "interval": "",
-          "legendFormat": "Up Time",
-          "refId": "A"
-        }
-      ],
-      "valueName": "current",
-      "format": "s",
-      "gridPos": {
-        "h": 4,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 9
-      },
-      "id": 3
-    },
-    {
-      "type": "graph",
-      "title": "Memory Usage",
-      "targets": [
-        {
-          "expr": "process_resident_memory_bytes",
-          "format": "time_series",
-          "interval": "",
-          "legendFormat": "Memory Usage",
-          "refId": "A"
-        }
-      ],
-      "datasource": null,
-      "xaxis": {
-        "mode": "time"
-      },
-      "yaxes": [
-        {
-          "format": "bytes",
-          "label": "Bytes"
-        }
-      ],
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 13
-      },
-      "id": 4
-    },
-    {
-      "type": "graph",
-      "title": "CPU Usage",
-      "targets": [
-        {
-          "expr": "rate(process_cpu_seconds_total[1m])",
-          "format": "time_series",
-          "interval": "",
-          "legendFormat": "CPU Usage",
-          "refId": "A"
-        }
-      ],
-      "datasource": null,
-      "xaxis": {
-        "mode": "time"
-      },
-      "yaxes": [
-        {
-          "format": "percent",
-          "label": "CPU"
-        }
-      ],
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 13
-      },
-      "id": 5
+        "y": 12
+      }
     }
   ],
   "templating": {

@@ -64,10 +64,10 @@ export class TiktokService {
         });
       }
     }
+    await this.prisma.event.createMany({
+      data: dbEvents,
+    });
     await Promise.allSettled([
-      await this.prisma.event.createMany({
-        data: dbEvents,
-      }),
       await this.prisma.tiktokUser.createMany({
         data: tiktokUsers,
       }),

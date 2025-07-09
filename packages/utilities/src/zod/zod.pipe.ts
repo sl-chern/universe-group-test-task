@@ -2,11 +2,10 @@ import { Injectable, PipeTransform } from "@nestjs/common";
 import { ZodSchema } from "zod";
 
 @Injectable()
-export class ZodPipe implements PipeTransform {
-  constructor(private readonly schema: ZodSchema) {}
+export class ZodPipe<T = unknown> implements PipeTransform {
+  constructor(private readonly schema: ZodSchema<T>) {}
 
   transform(value: unknown) {
-    this.schema.parse(value);
-    return value;
+    return this.schema.parse(value);
   }
 }

@@ -7,17 +7,26 @@ import { demographicReportSchema } from "src/reporter/validation-schemas/demogra
 import { EventReportDto } from "src/reporter/dto/event-report.dto";
 import { RevenueReportDto } from "src/reporter/dto/revenue-report.dto";
 import { DemographicReportDto } from "src/reporter/dto/demographic-report.dto";
+import { PrometheusService } from "src/prometheus/prometheus.service";
 
 @Controller("reports")
 export class ReporterController {
-  constructor(private readonly reporterService: ReporterService) {}
+  constructor(
+    private readonly reporterService: ReporterService,
+    private readonly prometheusService: PrometheusService,
+  ) {}
 
   @Get("events")
   getEventStats(
     @Query(new ZodPipe(eventReportSchema))
     query: EventReportDto,
   ) {
-    return this.reporterService.getEventStats(query);
+    const stop = this.prometheusService.startReportTimer("events");
+    try {
+      return this.reporterService.getEventStats(query);
+    } finally {
+      stop();
+    }
   }
 
   @Get("revenue")
@@ -25,7 +34,12 @@ export class ReporterController {
     @Query(new ZodPipe(revenueReportSchema))
     query: RevenueReportDto,
   ) {
-    return this.reporterService.getRevenueStats(query);
+    const stop = this.prometheusService.startReportTimer("revenue");
+    try {
+      return this.reporterService.getRevenueStats(query);
+    } finally {
+      stop();
+    }
   }
 
   @Get("demographics")
@@ -33,6 +47,11 @@ export class ReporterController {
     @Query(new ZodPipe(demographicReportSchema))
     query: DemographicReportDto,
   ) {
-    return this.reporterService.getDemographics(query);
+    const stop = this.prometheusService.startReportTimer("demographics");
+    try {
+      return this.reporterService.getDemographics(query);
+    } finally {
+      stop();
+    }
   }
 }
